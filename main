@@ -1,0 +1,68 @@
+from ase import Atoms
+from ase.calculators.emt import EMT
+atomss=["O","N","H"]
+
+value_menergyO = []  # value of atomization molecular energy for O2
+value_menergyN = []  # value of atomization molecular energy for N2
+value_menergyH = []  # value of atomization molecular energy for H2
+distance=[]
+
+
+for d in range (3,30):
+    d=d*0.4
+    distance.append(round(d,2))
+
+    for i in atomss:
+        atom = Atoms(i)
+        mole=str("2"+i)
+        atom.calc = EMT()
+
+        e_atom = atom.get_potential_energy()
+        molecule = Atoms(mole, [(0., 0., 0.), (0., 0., d)])
+        molecule.calc = EMT()
+        e_molecule = molecule.get_potential_energy()
+
+
+        e_atomization = e_molecule - 2 * e_atom
+
+        if i=="O":
+            value_menergyO.append(round(e_molecule,2))
+        elif i=="N":
+            value_menergyN.append(round(e_molecule,2))
+        elif i=="H":
+            value_menergyH.append(round(e_molecule,2))
+
+
+print("For distance:\n",distance)
+print("Energy for O2: \n",value_menergyO)
+print("Energy for N2: \n",value_menergyN)
+print("Energy for H2: \n",value_menergyH)
+
+#OR
+z=len(distance)
+print("Distance:  Atomization energy for O2 [ev]:   Energy for N2 [eV]:   Energy for H2 [eV]:")
+for a in range (0,len(distance)):
+
+    print(distance[a],"                 ", value_menergyO[a],"                      ",value_menergyN[a],"               ",value_menergyH[a])
+
+print("Max value energy of atomizataion for O is: ", max(value_menergyO), "[eV]")
+print("Max value energy of atomizataion for N is: ", max(value_menergyN), "[eV]")
+print("Max value energy of atomizataion for H is: ", max(value_menergyH), "[eV]")
+
+#WYKRESY
+import matplotlib.pyplot as plt
+plt.style.use('seaborn-whitegrid')
+
+
+plt.plot(distance, value_menergyO, 'o', color='black')
+plt.show()
+plt.plot(distance, value_menergyN, 'd', color='red')
+plt.show()
+plt.plot(distance, value_menergyH, 'o', color='blue')
+plt.show()
+
+#https://matplotlib.org/2.0.2/api/pyplot_api.html
+#https://matplotlib.org/stable/index.html
+#https://wiki.fysik.dtu.dk/ase/tutorials/tutorials.html
+
+
